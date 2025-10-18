@@ -1,0 +1,77 @@
+<view class="container">
+  <view class="filters card">
+    <view class="filter-row">
+      <text class="filter-label">分类</text>
+      <scroll-view class="filter-scroll" scroll-x>
+        <view class="filter-chips">
+          <view
+            wx:for="{{categories}}"
+            wx:key="*this"
+            class="chip {{selectedCategory === item ? 'is-active' : ''}}"
+            bindtap="selectCategory"
+            data-category="{{item}}">
+            {{item}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="filter-row">
+      <text class="filter-label">难度</text>
+      <scroll-view class="filter-scroll" scroll-x>
+        <view class="filter-chips">
+          <view
+            wx:for="{{difficulties}}"
+            wx:key="*this"
+            class="chip {{selectedDifficulty === item.value ? 'is-active' : ''}}"
+            bindtap="selectDifficulty"
+            data-difficulty="{{item.value}}">
+            {{item.name}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="filter-row">
+      <text class="filter-label">题型</text>
+      <scroll-view class="filter-scroll" scroll-x>
+        <view class="filter-chips">
+          <view
+            wx:for="{{types}}"
+            wx:key="*this"
+            class="chip {{selectedType === item.value ? 'is-active' : ''}}"
+            bindtap="selectType"
+            data-type="{{item.value}}">
+            {{item.name}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="flex-between mb-16">
+      <text class="card-title">题目列表（{{filteredQuestions.length}}）</text>
+      <button class="btn-secondary" style="padding: 12rpx 24rpx;" bindtap="startExamWithFiltered">开始练习</button>
+    </view>
+    <view wx:if="{{filteredQuestions.length === 0}}" class="empty-state">
+      <text>没有符合条件的题目</text>
+    </view>
+    <view wx:else class="question-list">
+      <view
+        wx:for="{{filteredQuestions}}"
+        wx:key="id"
+        class="question-preview"
+        bindtap="previewQuestion"
+        data-question-id="{{item.id}}">
+        <view class="preview-header">
+          <text class="preview-title">{{item.question}}</text>
+        </view>
+        <view class="preview-meta">
+          <text class="tag">{{item.typeText}}</text>
+          <text class="tag">{{item.difficultyText}}</text>
+          <text class="tag">{{item.category}}</text>
+          <text class="tag">{{item.score}}分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

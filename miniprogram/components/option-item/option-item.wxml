@@ -1,0 +1,12 @@
+<view
+  class="option-item {{selected ? 'is-selected' : ''}} {{showResult ? (option.isCorrect ? 'is-correct' : (selected ? 'is-selected-result' : '')) : ''}}"
+  bindtap="handleSelect">
+  <view class="option-left">
+    <text class="option-key">{{option.key}}</text>
+    <text class="option-value">{{option.value}}</text>
+  </view>
+  <view class="option-right" wx:if="{{showResult}}">
+    <text wx:if="{{option.isCorrect}}" class="label-correct">标准答案</text>
+    <text wx:elif="{{selected}}" class="label-user">你的选择</text>
+  </view>
+</view>

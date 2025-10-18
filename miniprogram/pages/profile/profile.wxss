@@ -1,0 +1,128 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background-color: #EEF2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  margin-right: 32rpx;
+}
+
+.info .name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #111827;
+}
+
+.info .desc {
+  font-size: 28rpx;
+  color: #6B7280;
+  margin-top: 8rpx;
+}
+
+.tab-bar {
+  display: flex;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin: 24rpx 0;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 30rpx;
+  color: #6B7280;
+}
+
+.tab.is-active {
+  background-color: #4F46E5;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.quick-actions button {
+  width: 100%;
+}
+
+.record-item {
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  background-color: #F9FAFB;
+  border-radius: 16rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-title {
+  font-size: 30rpx;
+  color: #111827;
+}
+
+.record-score {
+  font-size: 32rpx;
+  color: #4F46E5;
+  font-weight: bold;
+}
+
+.record-info,
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #6B7280;
+}
+
+.wrong-item {
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  background-color: #FEF2F2;
+  border-radius: 16rpx;
+  border-left: 8rpx solid #EF4444;
+}
+
+.wrong-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.wrong-title {
+  font-size: 30rpx;
+  color: #B91C1C;
+}
+
+.wrong-count {
+  font-size: 26rpx;
+  color: #EF4444;
+}
+
+.wrong-body {
+  font-size: 26rpx;
+  color: #7F1D1D;
+  margin-bottom: 12rpx;
+}
+
+.wrong-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wrong-time {
+  font-size: 24rpx;
+  color: #B45309;
+}

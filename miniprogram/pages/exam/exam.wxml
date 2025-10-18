@@ -1,0 +1,40 @@
+<view class="exam-container" wx:if="{{questions.length}}">
+  <view class="exam-header">
+    <view class="timer">用时：{{timeText}}</view>
+    <progress-bar label="答题进度" current="{{currentIndex + 1}}" total="{{questions.length}}" />
+  </view>
+
+  <view class="exam-body">
+    <view class="question-number">第 {{currentIndex + 1}} / {{questions.length}} 题</view>
+    <question-card
+      question="{{currentQuestion}}"
+      userAnswer="{{answers[currentQuestion.id]}}"
+      bind:answerchange="handleAnswerChange"
+    />
+  </view>
+
+  <view class="exam-actions">
+    <button
+      class="btn-nav"
+      bindtap="prevQuestion"
+      disabled="{{currentIndex === 0}}">
+      上一题
+    </button>
+    <button
+      wx:if="{{currentIndex < questions.length - 1}}"
+      class="btn-nav btn-primary"
+      bindtap="nextQuestion">
+      下一题
+    </button>
+    <button
+      wx:else
+      class="btn-nav btn-primary"
+      bindtap="submitExam">
+      提交答卷
+    </button>
+  </view>
+</view>
+
+<view wx:else class="empty-state">
+  <text>暂时没有可答题目，请返回首页重新选择。</text>
+</view>

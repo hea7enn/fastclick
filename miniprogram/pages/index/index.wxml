@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="welcome card">
+    <view class="welcome-title">智能答题教练</view>
+    <view class="welcome-desc">刷题、模拟考试、错题复盘一步到位，让你随时随地碎片高效学习。</view>
+    <view class="welcome-actions">
+      <button class="btn-primary" bindtap="handleStartExam">极速开考</button>
+      <button class="btn-secondary mt-8" bindtap="goQuestionBank">浏览题库</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">学习总览</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-value">{{stat.totalQuestions}}</text>
+        <text class="stats-label">题库总量</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{stat.totalRecords}}</text>
+        <text class="stats-label">累计考试</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{stat.accuracy}}%</text>
+        <text class="stats-label">平均正确率</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{stat.wrongCount}}</text>
+        <text class="stats-label">错题收藏</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">热门功能</view>
+    <view class="features">
+      <view class="feature-item" bindtap="goExam">
+        <view class="feature-title">章节练习</view>
+        <view class="feature-desc">按分类刷题，精准补短板。</view>
+      </view>
+      <view class="feature-item" bindtap="goHistory">
+        <view class="feature-title">历史成绩</view>
+        <view class="feature-desc">复盘最近答题记录。</view>
+      </view>
+      <view class="feature-item" bindtap="goWrong">
+        <view class="feature-title">错题重练</view>
+        <view class="feature-desc">重点攻克“老对手”。</view>
+      </view>
+    </view>
+  </view>
+</view>
