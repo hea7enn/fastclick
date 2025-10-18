@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import type { DifficultyLevel, Question, QuestionType } from '@/types/question'
+import type { DifficultyLevel, Question, QuestionType, ExamRecord, WrongQuestion, ViewMode } from '@/types/question'
 import { useQuestionBankStore } from './questionBank'
 
 export type ExamStatus = 'idle' | 'ready' | 'in-progress' | 'finished'
@@ -44,6 +44,9 @@ interface PrepareResult {
 }
 
 const STORAGE_KEY = 'exam-progress-v1'
+const HISTORY_KEY = 'exam-history-v1'
+const WRONG_QUESTIONS_KEY = 'wrong-questions-v1'
+const VIEW_MODE_KEY = 'view-mode-v1'
 const MIN_DURATION = 5
 
 const QUESTION_TYPES: QuestionType[] = ['single', 'multiple', 'judge', 'fill']
@@ -63,11 +66,13 @@ const createDefaultState = (): ExamState => ({
 
 const canUseStorage = () => typeof window !== 'undefined' && !!window.localStorage
 
-const shuffle = <T>(list: T[]) => {
+const shuffle = <T>(list: T[]): T[] => {
   const arr = [...list]
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    const temp = arr[i]
+    arr[i] = arr[j]!
+    arr[j] = temp!
   }
   return arr
 }
@@ -202,9 +207,7 @@ export const useExamStore = defineStore('exam', () => {
       duration: Math.max(MIN_DURATION, Math.round(configInput.duration))
     }
 
-    const source = questionBankStore.questions
-    const list = Array.isArray(source) ? source : source.value
-    const pool = list.filter((question) => {
+    const pool = questionBankStore.questions.filter((question: Question) => {
       const matchCategory = normalizedConfig.category === 'all' || question.category === normalizedConfig.category
       const matchDifficulty = normalizedConfig.difficulty === 'all' || question.difficulty === normalizedConfig.difficulty
       const matchType = normalizedConfig.questionTypes.includes(question.type)
@@ -412,6 +415,184 @@ export const useExamStore = defineStore('exam', () => {
     return summary
   })
 
+  // 历史记录管理
+  const loadHistory = (): ExamRecord[] => {
+    if (!canUseStorage()) return []
+    try {
+      const raw = window.localStorage.getItem(HISTORY_KEY)
+      if (!raw) return []
+      return JSON.parse(raw) as ExamRecord[]
+    } catch (error) {
+      console.error('加载历史记录失败', error)
+      return []
+    }
+  }
+
+  const saveHistory = (records: ExamRecord[]) => {
+    if (!canUseStorage()) return
+    try {
+      window.localStorage.setItem(HISTORY_KEY, JSON.stringify(records))
+    } catch (error) {
+      console.error('保存历史记录失败', error)
+    }
+  }
+
+  const history = ref<ExamRecord[]>(loadHistory())
+
+  const addHistoryRecord = () => {
+    if (state.value.status !== 'finished' || !state.value.config) return
+
+    const record: ExamRecord = {
+      id: Date.now().toString(),
+      title: state.value.config.category === 'all' ? '综合练习' : state.value.config.category,
+      date: state.value.finishedAt || Date.now(),
+      score: statistics.value.obtainedScore,
+      totalScore: statistics.value.totalScore,
+      correctCount: statistics.value.correctCount,
+      totalQuestions: statistics.value.totalQuestions,
+      accuracy: statistics.value.accuracy,
+      usedSeconds: statistics.value.usedSeconds,
+      config: {
+        category: state.value.config.category,
+        difficulty: state.value.config.difficulty,
+        questionTypes: [...state.value.config.questionTypes],
+        duration: state.value.config.duration
+      },
+      questions: [...state.value.questions],
+      answers: { ...state.value.answers }
+    }
+
+    history.value = [record, ...history.value].slice(0, 50) // 保留最近50条记录
+    saveHistory(history.value)
+
+    // 同时更新错题本
+    updateWrongQuestions()
+  }
+
+  const deleteHistoryRecord = (id: string) => {
+    history.value = history.value.filter((record) => record.id !== id)
+    saveHistory(history.value)
+  }
+
+  const clearHistory = () => {
+    history.value = []
+    saveHistory([])
+  }
+
+  // 错题本管理
+  const loadWrongQuestions = (): WrongQuestion[] => {
+    if (!canUseStorage()) return []
+    try {
+      const raw = window.localStorage.getItem(WRONG_QUESTIONS_KEY)
+      if (!raw) return []
+      return JSON.parse(raw) as WrongQuestion[]
+    } catch (error) {
+      console.error('加载错题本失败', error)
+      return []
+    }
+  }
+
+  const saveWrongQuestions = (questions: WrongQuestion[]) => {
+    if (!canUseStorage()) return
+    try {
+      window.localStorage.setItem(WRONG_QUESTIONS_KEY, JSON.stringify(questions))
+    } catch (error) {
+      console.error('保存错题本失败', error)
+    }
+  }
+
+  const wrongQuestions = ref<WrongQuestion[]>(loadWrongQuestions())
+
+  const updateWrongQuestions = () => {
+    const wrongMap = new Map<string, WrongQuestion>()
+    wrongQuestions.value.forEach((wq) => wrongMap.set(wq.question.id, wq))
+
+    state.value.questions.forEach((question) => {
+      const answer = state.value.answers[question.id]
+      const isCorrect = isAnswerCorrect(question, answer)
+
+      if (!isCorrect && answer !== undefined) {
+        const existing = wrongMap.get(question.id)
+        if (existing) {
+          existing.wrongCount += 1
+          existing.lastWrongTime = Date.now()
+          existing.userAnswer = answer
+          existing.isResolved = false
+        } else {
+          wrongMap.set(question.id, {
+            id: question.id,
+            question: { ...question },
+            userAnswer: answer,
+            wrongCount: 1,
+            lastWrongTime: Date.now(),
+            isResolved: false
+          })
+        }
+      } else if (isCorrect) {
+        const existing = wrongMap.get(question.id)
+        if (existing) {
+          existing.isResolved = true
+        }
+      }
+    })
+
+    wrongQuestions.value = Array.from(wrongMap.values()).sort((a, b) => b.lastWrongTime - a.lastWrongTime)
+    saveWrongQuestions(wrongQuestions.value)
+  }
+
+  const deleteWrongQuestion = (id: string) => {
+    wrongQuestions.value = wrongQuestions.value.filter((wq) => wq.id !== id)
+    saveWrongQuestions(wrongQuestions.value)
+  }
+
+  const clearWrongQuestions = () => {
+    wrongQuestions.value = []
+    saveWrongQuestions([])
+  }
+
+  const markWrongQuestionResolved = (id: string) => {
+    const wq = wrongQuestions.value.find((item) => item.id === id)
+    if (wq) {
+      wq.isResolved = true
+      saveWrongQuestions(wrongQuestions.value)
+    }
+  }
+
+  // 答案查看模式
+  const loadViewMode = (): ViewMode => {
+    if (!canUseStorage()) return 'exam'
+    try {
+      const raw = window.localStorage.getItem(VIEW_MODE_KEY)
+      if (!raw) return 'exam'
+      return (raw as ViewMode) || 'exam'
+    } catch (error) {
+      return 'exam'
+    }
+  }
+
+  const saveViewMode = (mode: ViewMode) => {
+    if (!canUseStorage()) return
+    try {
+      window.localStorage.setItem(VIEW_MODE_KEY, mode)
+    } catch (error) {
+      console.error('保存查看模式失败', error)
+    }
+  }
+
+  const viewMode = ref<ViewMode>(loadViewMode())
+
+  const setViewMode = (mode: ViewMode) => {
+    viewMode.value = mode
+    saveViewMode(mode)
+  }
+
+  // 重写 finishExam 以自动保存历史记录
+  const originalFinishExam = finishExam
+  const enhancedFinishExam = () => {
+    originalFinishExam()
+    addHistoryRecord()
+  }
+
   return {
     status,
     config,
@@ -431,7 +612,7 @@ export const useExamStore = defineStore('exam', () => {
     statistics,
     prepareExam,
     startExam,
-    finishExam,
+    finishExam: enhancedFinishExam,
     clearProgress,
     decreaseRemainingSeconds,
     setCurrentIndex,
@@ -443,6 +624,19 @@ export const useExamStore = defineStore('exam', () => {
     isAnswered,
     toggleMark,
     isMarked,
-    getUnansweredIds
+    getUnansweredIds,
+    isAnswerCorrect,
+    // 历史记录
+    history,
+    deleteHistoryRecord,
+    clearHistory,
+    // 错题本
+    wrongQuestions,
+    deleteWrongQuestion,
+    clearWrongQuestions,
+    markWrongQuestionResolved,
+    // 答案查看模式
+    viewMode,
+    setViewMode
   }
 })

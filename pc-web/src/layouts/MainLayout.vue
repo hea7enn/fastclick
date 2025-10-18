@@ -70,7 +70,10 @@ const menuItems = computed(() => [
   { path: '/home', title: '首页', icon: 'HomeFilled' },
   { path: '/question-bank', title: '题库管理', icon: 'Document' },
   { path: '/exam', title: '开始答题', icon: 'Edit' },
-  { path: '/result', title: '成绩查询', icon: 'TrendCharts' }
+  { path: '/result', title: '成绩分析', icon: 'TrendCharts' },
+  { path: '/answer-analysis', title: '答案解析', icon: 'Notebook' },
+  { path: '/wrong-questions', title: '错题本', icon: 'Warning' },
+  { path: '/history', title: '答题历史', icon: 'Clock' }
 ])
 
 const activeMenu = computed(() => route.path)

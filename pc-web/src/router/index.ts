@@ -31,6 +31,24 @@ const routes: RouteRecordRaw[] = [
         name: 'Result',
         component: () => import('@/views/Result.vue'),
         meta: { title: '成绩查询', icon: 'TrendCharts' }
+      },
+      {
+        path: '/answer-analysis',
+        name: 'AnswerAnalysis',
+        component: () => import('@/views/AnswerAnalysis.vue'),
+        meta: { title: '答案解析', icon: 'Document' }
+      },
+      {
+        path: '/wrong-questions',
+        name: 'WrongQuestions',
+        component: () => import('@/views/WrongQuestions.vue'),
+        meta: { title: '错题本', icon: 'Warning' }
+      },
+      {
+        path: '/history',
+        name: 'History',
+        component: () => import('@/views/History.vue'),
+        meta: { title: '答题历史', icon: 'Clock' }
       }
     ]
   }

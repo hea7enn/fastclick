@@ -94,3 +94,60 @@ export const difficultyNameMap: Record<DifficultyLevel, string> = {
   medium: '中等',
   hard: '困难'
 }
+
+/**
+ * 答题记录接口
+ */
+export interface ExamRecord {
+  id: string
+  title: string
+  date: number
+  score: number
+  totalScore: number
+  correctCount: number
+  totalQuestions: number
+  accuracy: number
+  usedSeconds: number
+  config: {
+    category: string
+    difficulty: string
+    questionTypes: QuestionType[]
+    duration: number
+  }
+  questions: Question[]
+  answers: Record<string, string | string[]>
+}
+
+/**
+ * 错题记录接口
+ */
+export interface WrongQuestion {
+  id: string
+  question: Question
+  userAnswer: string | string[]
+  wrongCount: number
+  lastWrongTime: number
+  isResolved: boolean
+}
+
+/**
+ * 答案查看模式
+ */
+export type ViewMode = 'practice' | 'exam'
+
+/**
+ * 答案查看模式配置
+ */
+export interface ViewModeConfig {
+  mode: ViewMode
+  showAnswerImmediately: boolean
+  showAnalysis: boolean
+}
+
+/**
+ * 答案查看模式名称映射
+ */
+export const viewModeNameMap: Record<ViewMode, string> = {
+  practice: '练习模式',
+  exam: '考试模式'
+}
