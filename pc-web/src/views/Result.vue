@@ -5,27 +5,40 @@
       成绩查询
     </div>
 
+    <el-alert
+      v-if="!hasResult"
+      class="notice-alert"
+      type="info"
+      show-icon
+      :closable="false"
+      title="暂未检测到最新成绩，完成一次答题后即可查看统计信息。"
+    />
+
     <el-row :gutter="24">
       <el-col :xs="24" :md="8">
         <el-card class="score-card modern-card" shadow="hover">
           <div class="score-wrapper">
             <div class="score-circle">
-              <span class="score">{{ result.score }}</span>
+              <span class="score">{{ scoreDisplay }}</span>
               <span class="score-label">综合得分</span>
             </div>
             <div class="score-info">
               <div class="score-info-item">
                 <span class="label">正确率</span>
-                <span class="value">{{ result.accuracy }}%</span>
+                <span class="value">{{ accuracyDisplay }}</span>
               </div>
               <div class="score-info-item">
                 <span class="label">用时</span>
-                <span class="value">{{ result.timeUsed }}</span>
+                <span class="value">{{ timeUsedDisplay }}</span>
               </div>
               <div class="score-info-item">
                 <span class="label">排名</span>
-                <span class="value">TOP {{ result.rank }}%</span>
+                <span class="value">{{ rankDisplay }}</span>
               </div>
+            </div>
+            <div v-if="hasResult" class="score-meta">
+              <span>{{ examTitle }}</span>
+              <span>{{ finishedAtDisplay }}</span>
             </div>
           </div>
         </el-card>
@@ -68,7 +81,7 @@
         </div>
       </template>
 
-      <el-table :data="filteredHistory" style="width: 100%">
+      <el-table v-if="hasFilteredHistory" :data="filteredHistory" style="width: 100%">
         <el-table-column prop="title" label="考试名称" min-width="200" />
         <el-table-column prop="date" label="日期" width="180" align="center" />
         <el-table-column prop="score" label="成绩" width="120" align="center">
@@ -81,12 +94,19 @@
         <el-table-column prop="time" label="用时" width="120" align="center" />
         <el-table-column prop="accuracy" label="正确率" width="120" align="center" />
       </el-table>
+      <el-empty
+        v-else
+        :description="hasHistory ? '暂无符合筛选条件的记录' : '暂无成绩记录，快去开启一次新的挑战吧～'"
+      />
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useExamStore } from '@/stores'
+import { formatDate } from '@/utils'
 
 type TimelineType = 'primary' | 'success' | 'warning' | 'danger'
 
@@ -106,12 +126,8 @@ interface HistoryItem {
   accuracy: string
 }
 
-const result = ref({
-  score: 92,
-  accuracy: 87,
-  timeUsed: '28 分钟',
-  rank: 15
-})
+const examStore = useExamStore()
+const { statistics, questionList, finishedAt, status, config } = storeToRefs(examStore)
 
 const analysis = ref<AnalysisItem[]>([
   {
@@ -137,21 +153,70 @@ const analysis = ref<AnalysisItem[]>([
   }
 ])
 
-const history = ref<HistoryItem[]>([
-  { title: '阶段性检测 A', date: '2024-09-30', score: 95, time: '30 分钟', accuracy: '90%' },
-  { title: '能力提升练习 B', date: '2024-09-15', score: 82, time: '35 分钟', accuracy: '78%' },
-  { title: '专题专项训练 C', date: '2024-09-01', score: 88, time: '32 分钟', accuracy: '84%' },
-  { title: '模拟考试 D', date: '2024-08-25', score: 71, time: '40 分钟', accuracy: '65%' }
-])
-
 const showOnlyHighScore = ref(false)
+
+const formatDuration = (seconds: number) => {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  if (mins === 0) {
+    return `${secs} 秒`
+  }
+  if (secs === 0) {
+    return `${mins} 分`
+  }
+  return `${mins} 分 ${secs} 秒`
+}
+
+const hasResult = computed(() => status.value === 'finished' && statistics.value.totalQuestions > 0 && questionList.value.length > 0)
+
+const scoreDisplay = computed(() => (hasResult.value ? statistics.value.obtainedScore.toString() : '--'))
+const accuracyDisplay = computed(() => (hasResult.value ? `${statistics.value.accuracy}%` : '--'))
+const timeUsedDisplay = computed(() => (hasResult.value ? formatDuration(statistics.value.usedSeconds) : '--'))
+const rankDisplay = computed(() => '--')
+
+const examTitle = computed(() => {
+  if (!hasResult.value || !config.value) {
+    return '暂无成绩'
+  }
+  const parts: string[] = []
+  const categoryLabel = config.value.category === 'all' ? '综合练习' : config.value.category
+  parts.push(categoryLabel)
+  parts.push(`${statistics.value.totalQuestions} 题`)
+  parts.push(`${config.value.duration} 分钟`)
+  return parts.join(' · ')
+})
+
+const finishedAtDisplay = computed(() => {
+  if (!hasResult.value || !finishedAt.value) {
+    return '--'
+  }
+  return formatDate(finishedAt.value)
+})
+
+const historyList = computed<HistoryItem[]>(() => {
+  if (!hasResult.value) {
+    return []
+  }
+  return [
+    {
+      title: examTitle.value || '本次练习',
+      date: finishedAtDisplay.value,
+      score: statistics.value.obtainedScore,
+      time: timeUsedDisplay.value,
+      accuracy: accuracyDisplay.value
+    }
+  ]
+})
 
 const filteredHistory = computed(() => {
   if (!showOnlyHighScore.value) {
-    return history.value
+    return historyList.value
   }
-  return history.value.filter((item) => item.score >= 85)
+  return historyList.value.filter((item) => item.score >= 85)
 })
+
+const hasHistory = computed(() => historyList.value.length > 0)
+const hasFilteredHistory = computed(() => filteredHistory.value.length > 0)
 </script>
 
 <style scoped lang="scss">
@@ -163,8 +228,20 @@ const filteredHistory = computed(() => {
   gap: $spacing-lg;
 }
 
+.notice-alert {
+  margin-bottom: $spacing-md;
+}
+
 .score-card {
   text-align: center;
+}
+
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: $text-secondary;
 }
 
 .score-wrapper {
