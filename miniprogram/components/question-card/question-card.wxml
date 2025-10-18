@@ -1,0 +1,46 @@
+<view class="question-card">
+  <view class="question-header">
+    <view class="question-meta">
+      <text class="meta-tag type-tag">{{typeText}}</text>
+      <text class="meta-tag difficulty-tag" style="color: {{difficultyColor}}">{{difficultyText}}</text>
+      <text class="meta-tag">{{question.score}}分</text>
+    </view>
+  </view>
+  
+  <view class="question-content">
+    <text class="question-text">{{question.question}}</text>
+  </view>
+
+  <view class="question-options" wx:if="{{question.type !== 'fill'}}">
+    <option-item
+      wx:for="{{optionsWithState}}"
+      wx:key="key"
+      option="{{item}}"
+      selected="{{item.selected}}"
+      disabled="{{disabled}}"
+      showResult="{{showResult}}"
+      bind:select="handleOptionSelect"
+    />
+  </view>
+
+  <view class="question-fill" wx:if="{{question.type === 'fill'}}">
+    <textarea
+      class="fill-input"
+      placeholder="请输入答案..."
+      value="{{fillValue}}"
+      disabled="{{disabled}}"
+      bindinput="handleFillInput"
+      maxlength="500"
+    ></textarea>
+  </view>
+
+  <view class="question-answer" wx:if="{{showResult}}">
+    <text class="answer-label">正确答案：</text>
+    <text class="answer-value">{{correctAnswerText}}</text>
+  </view>
+
+  <view class="question-analysis" wx:if="{{showAnalysis}}">
+    <view class="analysis-title">解析</view>
+    <text class="analysis-content">{{question.analysis}}</text>
+  </view>
+</view>

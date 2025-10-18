@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="profile-card card">
+    <view class="avatar">🧠</view>
+    <view class="info">
+      <view class="name">刷题达人</view>
+      <view class="desc">已完成 {{summary.totalRecords}} 次练习</view>
+    </view>
+  </view>
+
+  <view class="tab-bar">
+    <view class="tab {{activeTab === 'overview' ? 'is-active' : ''}}" data-tab="overview" bindtap="changeTab">概览</view>
+    <view class="tab {{activeTab === 'history' ? 'is-active' : ''}}" data-tab="history" bindtap="changeTab">历史成绩</view>
+    <view class="tab {{activeTab === 'wrong' ? 'is-active' : ''}}" data-tab="wrong" bindtap="changeTab">错题本</view>
+  </view>
+
+  <view wx:if="{{activeTab === 'overview'}}">
+    <view class="card">
+      <view class="card-title">学习数据</view>
+      <view class="info-row">
+        <text>题库数量</text>
+        <text class="text-primary">{{summary.totalQuestions}}</text>
+      </view>
+      <view class="info-row">
+        <text>平均得分</text>
+        <text class="text-primary">{{summary.avgScore}}</text>
+      </view>
+      <view class="info-row">
+        <text>平均正确率</text>
+        <text class="text-primary">{{summary.avgAccuracy}}%</text>
+      </view>
+      <view class="info-row">
+        <text>错题待消灭</text>
+        <text class="text-error">{{summary.wrongPending}}</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">快捷入口</view>
+      <view class="quick-actions">
+        <button class="btn-primary" bindtap="startQuickExam">快速测验</button>
+        <button class="btn-secondary mt-8" bindtap="goQuestionBank">进入题库</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{activeTab === 'history'}}" class="card">
+    <view class="card-title">历史成绩</view>
+    <view wx:if="{{records.length === 0}}" class="empty-state">暂无练习记录，先去做一套题吧！</view>
+    <view wx:for="{{records}}" wx:key="id" class="record-item">
+      <view class="record-header">
+        <text class="record-title">{{item.title}}</text>
+        <text class="record-score">{{item.score}} / {{item.totalScore}}</text>
+      </view>
+      <view class="record-info">
+        <text>{{item.correctCount}} / {{item.totalQuestions}} 题正确</text>
+        <text>正确率 {{item.accuracy}}%</text>
+      </view>
+      <view class="record-footer">
+        <text>{{item.dateText}}</text>
+        <text>用时 {{item.durationText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="card">
+    <view class="card-title">错题本</view>
+    <view wx:if="{{wrongQuestions.length === 0}}" class="empty-state">恭喜，暂无错题！</view>
+    <view wx:for="{{wrongQuestions}}" wx:key="id" class="wrong-item">
+      <view class="wrong-header">
+        <text class="wrong-title">{{item.question.question}}</text>
+        <text class="wrong-count">错了 {{item.wrongCount}} 次</text>
+      </view>
+      <view class="wrong-body">
+        <text class="wrong-answer">你的答案：{{item.userAnswerText}}</text>
+        <text class="wrong-correct">正确答案：{{item.correctAnswerText}}</text>
+      </view>
+      <view class="wrong-footer">
+        <text class="wrong-time">{{item.timeText}}</text>
+        <button class="btn-secondary" size="mini" data-id="{{item.id}}" bindtap="markResolved">标记已掌握</button>
+      </view>
+    </view>
+  </view>
+</view>

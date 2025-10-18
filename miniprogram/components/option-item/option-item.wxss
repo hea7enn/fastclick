@@ -1,0 +1,63 @@
+.option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  border-radius: 16rpx;
+  background-color: #F9FAFB;
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.option-item.is-selected {
+  background-color: rgba(79, 70, 229, 0.12);
+  border-color: rgba(79, 70, 229, 0.4);
+}
+
+.option-item.is-correct {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.option-item.is-selected-result {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.option-left {
+  display: flex;
+  align-items: center;
+}
+
+.option-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background-color: #EEF2FF;
+  color: #3730A3;
+  font-size: 28rpx;
+  margin-right: 24rpx;
+}
+
+.option-value {
+  font-size: 30rpx;
+  color: #1F2937;
+}
+
+.option-right {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.label-correct {
+  color: #10B981;
+}
+
+.label-user {
+  color: #EF4444;
+}

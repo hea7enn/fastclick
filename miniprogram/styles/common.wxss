@@ -1,0 +1,81 @@
+.card {
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(79, 70, 229, 0.08);
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+  box-sizing: border-box;
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+  color: #111827;
+}
+
+.tag {
+  background-color: rgba(79, 70, 229, 0.08);
+  color: #4F46E5;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  margin-right: 12rpx;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48rpx;
+  height: 48rpx;
+  padding: 0 16rpx;
+  border-radius: 24rpx;
+  background-color: rgba(79, 70, 229, 0.12);
+  color: #4F46E5;
+  font-size: 24rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  color: #4B5563;
+  font-size: 28rpx;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.divider {
+  height: 2rpx;
+  background-color: #E5E7EB;
+  margin: 24rpx 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  margin: 8rpx;
+  border-radius: 999rpx;
+  background-color: #E0E7FF;
+  color: #3730A3;
+  font-size: 24rpx;
+}
+
+.chip.is-active {
+  background-color: #4F46E5;
+  color: #FFFFFF;
+}
+
+.empty-state {
+  padding: 64rpx 32rpx;
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  text-align: center;
+  color: #6B7280;
+  font-size: 28rpx;
+}

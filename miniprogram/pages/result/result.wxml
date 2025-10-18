@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="result-card card">
+    <view class="result-icon">
+      <text wx:if="{{result.accuracy >= 80}}">🎉</text>
+      <text wx:elif="{{result.accuracy >= 60}}">😊</text>
+      <text wx:else>💪</text>
+    </view>
+    <view class="result-title">
+      <text wx:if="{{result.accuracy >= 80}}">太棒了！</text>
+      <text wx:elif="{{result.accuracy >= 60}}">还不错！</text>
+      <text wx:else>继续加油！</text>
+    </view>
+    
+    <view class="result-stats">
+      <view class="stat-item">
+        <text class="stat-value">{{result.earnedScore}}</text>
+        <text class="stat-label">得分</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{result.accuracy}}%</text>
+        <text class="stat-label">正确率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{timeText}}</text>
+        <text class="stat-label">用时</text>
+      </view>
+    </view>
+
+    <view class="result-detail">
+      <text class="detail-text">答对 {{result.correctCount}} / {{result.totalQuestions}} 题</text>
+      <text class="detail-text">错题 {{result.totalQuestions - result.correctCount}} 道</text>
+    </view>
+  </view>
+
+  <view class="actions-card card">
+    <button class="btn-primary" bindtap="handleRestart">再来一次</button>
+    <button class="btn-secondary mt-8" bindtap="handleViewAnalysis">{{showAnalysis ? '收起解析' : '查看解析'}}</button>
+    <button class="btn-secondary mt-8" bindtap="handleGoHome">返回首页</button>
+  </view>
+
+  <view class="card" wx:if="{{showAnalysis}}">
+    <view class="card-title mb-24">答案解析</view>
+    <view wx:for="{{questions}}" wx:key="id" class="mb-24">
+      <question-card
+        question="{{item}}"
+        userAnswer="{{answers[item.id]}}"
+        disabled="{{true}}"
+        showResult="{{true}}"
+        showAnalysis="{{true}}"
+      />
+    </view>
+  </view>
+</view>

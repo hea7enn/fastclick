@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "option-item": "/components/option-item/option-item"
+  }
+}

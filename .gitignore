@@ -3,3 +3,6 @@
 Thumbs.db
 Desktop.ini
 build
+miniprogram/miniprogram_npm/
+miniprogram/node_modules/
+miniprogram/project.private.config.json
