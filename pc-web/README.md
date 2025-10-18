@@ -20,28 +20,35 @@ pc-web/
 │   ├── api/              # API 接口层
 │   ├── assets/           # 静态资源
 │   ├── components/       # 公共组件
-│   │   └── common/       # 通用组件
+│   │   ├── ExcelImport.vue      # Excel 导入组件 ✨新增
+│   │   └── QuestionDialog.vue   # 题目编辑对话框 ✨新增
 │   ├── layouts/          # 布局组件
 │   │   └── MainLayout.vue
 │   ├── router/           # 路由配置
 │   │   └── index.ts
 │   ├── stores/           # Pinia 状态管理
 │   │   ├── index.ts
-│   │   └── user.ts
+│   │   ├── user.ts
+│   │   └── questionBank.ts      # 题库 Store ✨新增
 │   ├── styles/           # 全局样式
 │   │   ├── element/      # Element Plus 自定义样式
 │   │   ├── global.scss   # 全局样式
 │   │   ├── variables.scss # 样式变量
 │   │   └── index.scss    # 样式入口
+│   ├── types/            # TypeScript 类型定义 ✨新增
+│   │   ├── index.ts
+│   │   └── question.ts   # 题目相关类型
 │   ├── utils/            # 工具函数
-│   │   └── index.ts
+│   │   ├── index.ts
+│   │   └── excel.ts      # Excel 处理工具 ✨新增
 │   ├── views/            # 页面视图
 │   │   ├── Home.vue      # 首页
-│   │   ├── QuestionBank.vue # 题库管理
+│   │   ├── QuestionBank.vue # 题库管理 ✨已更新
 │   │   ├── Exam.vue      # 答题页面
 │   │   └── Result.vue    # 成绩结果
 │   ├── App.vue
 │   └── main.ts
+├── EXCEL_IMPORT_GUIDE.md # Excel 导入使用指南 ✨新增
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -59,11 +66,26 @@ pc-web/
 - 核心功能介绍
 - 最近答题记录
 
-### 2. 题库管理 (QuestionBank)
-- 题目列表展示
-- 搜索和筛选（分类、难度）
-- 题目详情查看
-- 题目标签管理
+### 2. 题库管理 (QuestionBank) ✨新增
+- **Excel 导入导出**
+  - 支持四种题型：单选题、多选题、判断题、填空题
+  - 提供标准模板下载
+  - 智能数据验证和错误提示
+  - 一键导出题库为 Excel
+- **题目管理**
+  - 题目列表展示（表格形式）
+  - 多维度筛选（题型、分类、难度）
+  - 关键词搜索
+  - 在线新建和编辑题目
+  - 题目删除功能
+- **数据统计**
+  - 题目总数统计
+  - 按题型分类统计
+- **数据持久化**
+  - 使用 localStorage 本地存储
+  - 支持数据导入导出
+
+详细使用说明请查看 [Excel 导入功能指南](./EXCEL_IMPORT_GUIDE.md)
 
 ### 3. 答题页面 (Exam)
 - 倒计时功能
