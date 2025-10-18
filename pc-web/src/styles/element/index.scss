@@ -1,0 +1,45 @@
+@use '../variables.scss' as *;
+
+:root {
+  --el-color-primary: #409eff;
+  --el-color-primary-light-3: #66b1ff;
+  --el-color-primary-light-5: #8cc4ff;
+  --el-color-primary-light-7: #b3d9ff;
+  --el-color-primary-light-8: #cfe5ff;
+  --el-color-primary-light-9: #eaf3ff;
+  --el-color-primary-dark-2: #3a8ee6;
+
+  --el-border-radius-base: #{$border-radius-base};
+  --el-border-radius-small: #{$border-radius-small};
+  --el-border-radius-round: 999px;
+
+  --el-font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.el-button--primary,
+.el-menu-item.is-active {
+  background-image: $primary-gradient;
+  border: none;
+}
+
+.el-menu-item {
+  border-radius: $border-radius-base;
+  margin: 4px 12px;
+  transition: $transition-base;
+}
+
+.el-menu-item:hover {
+  background-color: rgba(64, 158, 255, 0.12);
+}
+
+.el-card.modern-card {
+  border: none;
+  border-radius: $border-radius-large;
+  box-shadow: $box-shadow-light;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.el-card.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: $box-shadow-dark;
+}
